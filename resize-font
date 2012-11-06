@@ -1,0 +1,86 @@
+# vim:ft=perl:fenc=utf-8
+# Copyright (c) 2009-, Simon Lundström <simmel@soy.se>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+# Usage:
+# Set your font in ~/.Xresources:
+# urxvt.font: xft:Inconsolata:pixelsize=12
+
+# And re-bind some keymappings (if you want, below are the defaults):
+# URxvt.resize-font.smaller: C-minus
+# URxvt.resize-font.bigger: C-plus
+# URxvt.resize-font.reset: C-equal
+# URxvt.resize-font.show: C-question
+#
+
+my $default_font;
+
+sub on_start {
+  $default_font = $_[0]->resource('font');
+}
+
+sub on_init {
+   my ($self) = @_;
+   my $commands = {
+     "smaller" => "C-minus",
+     "bigger" => "C-plus",
+     "reset" => "C-equal",
+     "show" => "C-question",
+   };
+   bind_hotkeys($self, $commands);
+
+   ()
+}
+
+sub bind_hotkeys {
+  my ($self, $commands) = @_;
+  for (keys %$commands) {
+    my $hotkey = $self->x_resource("resize-font.$_") || $$commands{$_};
+
+    $self->parse_keysym($hotkey, "perl:resize-font:$_") or
+    warn "unable to register '$hotkey' as hotkey for $_\n";
+  }
+}
+
+sub on_user_command {
+  my ($self, $string) = @_;
+  my $font = $self->resource('font');
+  my $regex = qr"(?!pixelsize=)(\d+)";
+  if ($string =~ /bigger$/) {
+    $font =~ s/$regex/$1+2/e;
+  }
+  elsif ($string =~ /smaller$/) {
+    $font =~ s/$regex/$1-2/e;
+  }
+  elsif ($string =~ /reset$/) {
+    $font = $default_font;
+  }
+  elsif ($string =~ /show$/) {
+    my $term = $self->{'term'};
+    $term->{'resize-font'}{'overlay'} = {
+      ov => $term->overlay_simple (0, -1, $font),
+      to => urxvt::timer
+      ->new
+      ->start (urxvt::NOW + 1)
+      ->cb(sub {
+          delete $term->{'resize-font'}{'overlay'};
+        }),
+    };
+  }
+  else {
+    die "no font size found";
+  }
+  $self->cmd_parse(sprintf "\33]710;%s\007", $font);
+  ()
+}
