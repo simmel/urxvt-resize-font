@@ -7,7 +7,7 @@ Install instructions
 2. In your `~/.Xresources` add `resize-font` to the `urxvt.perl-ext-common`
    setting so URxvt loads the extension, e.g:
 
-    urxvt.perl-ext-common: default,tabbed,matcher,resize-font,-tabbed
+        urxvt.perl-ext-common: default,tabbed,matcher,resize-font,-tabbed
 
 3. See header of `resize-font` for standard keybinds and how to change them.
 
