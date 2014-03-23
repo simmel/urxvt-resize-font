@@ -1,5 +1,6 @@
 # vim:ft=perl:fenc=utf-8
 # Copyright (c) 2009-, Simon Lundström <simmel@soy.se>
+# Copyright (c) 2014 Maarten de Vries <maarten@de-vri.es>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -24,19 +25,28 @@
 # URxvt.resize-font.show: C-question
 #
 
-my $default_font;
+my @fonts = (
+  {'name' => 'font',           'code' => 710},
+  {'name' => 'boldFont',       'code' => 711},
+  {'name' => 'italicFont',     'code' => 712},
+  {'name' => 'boldItalicFont', 'code' => 713},
+);
 
 sub on_start {
-  $default_font = $_[0]->resource('font');
+  my ($self) = @_;
+
+  foreach (@fonts) {
+    $_->{'default'} = $self->resource($_->{'name'});
+  }
 }
 
 sub on_init {
    my ($self) = @_;
    my $commands = {
      "smaller" => "C-minus",
-     "bigger" => "C-plus",
-     "reset" => "C-equal",
-     "show" => "C-question",
+     "bigger"  => "C-plus",
+     "reset"   => "C-equal",
+     "show"    => "C-question",
    };
    bind_hotkeys($self, $commands);
 
@@ -55,32 +65,78 @@ sub bind_hotkeys {
 
 sub on_user_command {
   my ($self, $string) = @_;
-  my $font = $self->resource('font');
   my $regex = qr"(?!pixelsize=)(\d+)";
+
   if ($string =~ /bigger$/) {
-    $font =~ s/$regex/$1+2/e;
+    foreach (@fonts) {
+      next if not defined($_->{'default'});
+      update_font_size($self, $_, +2);
+    }
   }
   elsif ($string =~ /smaller$/) {
-    $font =~ s/$regex/$1-2/e;
+    foreach (@fonts) {
+      next if not defined($_->{'default'});
+      update_font_size($self, $_, -2);
+    }
   }
   elsif ($string =~ /reset$/) {
-    $font = $default_font;
+    foreach (@fonts) {
+      next if not defined($_->{'default'});
+      set_font($self, $_, $_->{'default'});
+    }
   }
   elsif ($string =~ /show$/) {
+
     my $term = $self->{'term'};
     $term->{'resize-font'}{'overlay'} = {
-      ov => $term->overlay_simple (0, -1, $font),
+      ov => $term->overlay_simple(0, -1, format_font_info($self)),
       to => urxvt::timer
       ->new
-      ->start (urxvt::NOW + 1)
+      ->start(urxvt::NOW + 1)
       ->cb(sub {
-          delete $term->{'resize-font'}{'overlay'};
-        }),
+        delete $term->{'resize-font'}{'overlay'};
+      }),
     };
   }
   else {
     die "no font size found";
   }
-  $self->cmd_parse(sprintf "\33]710;%s\007", $font);
+
   ()
+}
+
+sub get_font {
+  my ($self, $name) = @_;
+  return $self->resource($name);
+}
+
+sub set_font {
+  my ($self, $font, $new) = @_;
+  $self->cmd_parse(sprintf("\33]%d;%s\007", $font->{'code'}, $new));
+}
+
+sub update_font_size {
+  my ($self, $font, $delta) = @_;
+  my $regex = qr"(?!pixelsize=)(\d+)";
+  my $current = get_font($self, $font->{'name'});
+  $current =~ s/$regex/$1+$delta/e;
+  set_font($self, $font, $current);
+}
+
+sub format_font_info {
+  my ($self) = @_;
+
+  my $width = 0;
+  foreach (@fonts) {
+    my $length = length($_->{'name'});
+    $width = $length > $width ? $length : $width;
+  }
+  ++$width;
+
+  my $info = '';
+  foreach (@fonts) {
+    $info .= sprintf("%-${width}s %s\n", $_->{'name'} . ':', get_font($self, $_->{'name'}));
+  }
+
+  return $info;
 }
