@@ -117,7 +117,7 @@ sub set_font {
 
 sub update_font_size {
   my ($self, $font, $delta) = @_;
-  my $regex = qr"(?!pixelsize=)(\d+)";
+  my $regex = qr"(?<=size=)(\d+)";
   my $current = get_font($self, $font->{'name'});
   $current =~ s/$regex/$1+$delta/e;
   set_font($self, $font, $current);
