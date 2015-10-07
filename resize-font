@@ -17,6 +17,9 @@
 # Usage:
 # Set your font in ~/.Xresources:
 # urxvt.font: xft:Inconsolata:pixelsize=12
+# to set it with pixels or
+# urxvt.font: xft:Inconsolata:size=12
+# to set it with points.
 
 # And re-bind some keymappings (if you want, below are the defaults):
 # URxvt.resize-font.smaller: C-minus
