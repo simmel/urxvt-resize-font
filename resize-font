@@ -29,6 +29,8 @@
 # URxvt.keysym.C-equal:     resize-font:reset
 # URxvt.keysym.C-question:  resize-font:show
 #
+# You can also configure the number of steps to take when changing the size:
+# URxvt.resize-font.step: 2
 
 my @fonts = (
   {'name' => 'font',           'code' => 710},
@@ -38,6 +40,7 @@ my @fonts = (
 );
 
 my @fixed = qw(4x6 5x7 5x8 6x9 6x10 6x12 6x13 7x13 7x14 8x13 8x16 9x15 9x18 10x20 12x24);
+my $step;
 
 sub on_start {
   my ($self) = @_;
@@ -45,6 +48,8 @@ sub on_start {
   foreach (@fonts) {
     $_->{'default'} = $self->resource($_->{'name'});
   }
+
+  $step = $self->x_resource("%.step") || 2;
 }
 
 sub on_init {
@@ -90,13 +95,13 @@ sub on_action {
   if ($string eq "bigger") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
-      update_font_size($self, $_, +2);
+      update_font_size($self, $_, +$step);
     }
   }
   elsif ($string eq "smaller") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
-      update_font_size($self, $_, -2);
+      update_font_size($self, $_, -$step);
     }
   }
   elsif ($string eq "reset") {
