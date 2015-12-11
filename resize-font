@@ -86,7 +86,6 @@ sub bind_hotkeys {
 
 sub on_action {
   my ($self, $string) = @_;
-  my $regex = qr"(?!pixelsize=)(\d+)";
 
   if ($string eq "bigger") {
     foreach (@fonts) {
