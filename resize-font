@@ -145,6 +145,12 @@ sub update_font_size {
     if ($index > $#fixed) { $index = $#fixed; }
     $current = $fixed[$index];
   }
+  elsif ($current =~ /^-/) {
+    my @font = split(/-/, $current);
+    # https://en.wikipedia.org/wiki/X_logical_font_description
+    $font[7] = $font[7]+$delta;
+    $current = join('-', @font);
+  }
   else {
     $current =~ s/$regex/$1+$delta/ge;
   }
