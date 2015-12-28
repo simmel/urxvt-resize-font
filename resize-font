@@ -101,9 +101,6 @@ sub on_user_command {
       }),
     };
   }
-  else {
-    die "no font size found";
-  }
 
   ()
 }
