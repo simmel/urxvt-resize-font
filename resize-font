@@ -131,7 +131,7 @@ sub update_font_size {
     $current = $fixed[$index];
   }
   else {
-    $current =~ s/$regex/$1+$delta/e;
+    $current =~ s/$regex/$1+$delta/ge;
   }
   set_font($self, $font, $current);
 }
