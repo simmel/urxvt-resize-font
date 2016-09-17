@@ -72,25 +72,25 @@ sub on_user_command {
   my ($self, $string) = @_;
   my $regex = qr"(?!pixelsize=)(\d+)";
 
-  if ($string =~ /bigger$/) {
+  if ($string eq "resize-font:bigger") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
       update_font_size($self, $_, +2);
     }
   }
-  elsif ($string =~ /smaller$/) {
+  elsif ($string eq "resize-font:smaller") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
       update_font_size($self, $_, -2);
     }
   }
-  elsif ($string =~ /reset$/) {
+  elsif ($string eq "resize-font:reset") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
       set_font($self, $_, $_->{'default'});
     }
   }
-  elsif ($string =~ /show$/) {
+  elsif ($string eq "resize-font:show") {
 
     my $term = $self->{'term'};
     $term->{'resize-font'}{'overlay'} = {
