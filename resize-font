@@ -61,36 +61,36 @@ sub on_init {
 sub bind_hotkeys {
   my ($self, $commands) = @_;
   for (keys %$commands) {
-    my $hotkey = $self->x_resource("resize-font.$_") || $$commands{$_};
+    my $hotkey = $self->x_resource("%.$_") || $$commands{$_};
 
-    $self->parse_keysym($hotkey, "perl:resize-font:$_") or
+    $self->bind_action($hotkey, "%:$_") or
     warn "unable to register '$hotkey' as hotkey for $_\n";
   }
 }
 
-sub on_user_command {
+sub on_action {
   my ($self, $string) = @_;
   my $regex = qr"(?!pixelsize=)(\d+)";
 
-  if ($string eq "resize-font:bigger") {
+  if ($string eq "bigger") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
       update_font_size($self, $_, +2);
     }
   }
-  elsif ($string eq "resize-font:smaller") {
+  elsif ($string eq "smaller") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
       update_font_size($self, $_, -2);
     }
   }
-  elsif ($string eq "resize-font:reset") {
+  elsif ($string eq "reset") {
     foreach (@fonts) {
       next if not defined($_->{'default'});
       set_font($self, $_, $_->{'default'});
     }
   }
-  elsif ($string eq "resize-font:show") {
+  elsif ($string eq "show") {
 
     my $term = $self->{'term'};
     $term->{'resize-font'}{'overlay'} = {
