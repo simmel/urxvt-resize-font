@@ -22,10 +22,10 @@
 # to set it with points.
 
 # And re-bind some keymappings (if you want, below are the defaults):
-# URxvt.resize-font.smaller: C-minus
-# URxvt.resize-font.bigger: C-plus
-# URxvt.resize-font.reset: C-equal
-# URxvt.resize-font.show: C-question
+# URxvt.keysym.C-minus:     resize-font:smaller
+# URxvt.keysym.C-plus:      resize-font:bigger
+# URxvt.keysym.C-equal:     resize-font:reset
+# URxvt.keysym.C-question:  resize-font:show
 #
 
 my @fonts = (
@@ -60,11 +60,25 @@ sub on_init {
 
 sub bind_hotkeys {
   my ($self, $commands) = @_;
-  for (keys %$commands) {
-    my $hotkey = $self->x_resource("%.$_") || $$commands{$_};
 
-    $self->bind_action($hotkey, "%:$_") or
-    warn "unable to register '$hotkey' as hotkey for $_\n";
+  for (keys %$commands) {
+    my $hotkey = $$commands{$_};
+    my $hotkey_bound = $self->{'term'}->x_resource("keysym.$hotkey");
+    if (!defined($hotkey_bound) ) {
+      # Support old-style key bindings
+      if ($self->x_resource("%.$_")) {
+        $hotkey = $self->x_resource("%.$_");
+      }
+
+      # FIXME If we're bound to a keysym, don't bind the default.
+      $self->bind_action($hotkey, "%:$_") or
+      warn "unable to register '$hotkey' as hotkey for $_";
+    }
+    else {
+      if ($hotkey_bound !~ /^resize-font:/) {
+        warn "Hotkey $$commands{$_} already bound to $hotkey_bound, not binding to resize-font:$_ by default.";
+      }
+    }
   }
 }
 
