@@ -1,8 +1,8 @@
 Install instructions
 --------------------
 
-1. Copy `resize-font` to where URxvt looks for it's Perl extensions (see
-   `urxvt(1)` man-page on `perl-lib`)
+1. Copy `resize-font` to where URxvt looks for Perl extensions, e.g:
+   `$HOME/.urxvt/ext/`. For exact path see urxvt(1) man-page on perl-lib.
 
 2. In your `~/.Xresources` add `resize-font` to the `urxvt.perl-ext-common`
    setting so URxvt loads the extension, e.g:
