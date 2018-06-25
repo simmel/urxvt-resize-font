@@ -22,6 +22,10 @@
 # to set it with pixels or
 # urxvt.font: xft:Inconsolata:size=12
 # to set it with points.
+# Fixed fonts are also supported:
+# urxvt.font: 7x14
+# XLFD/X logical font description too:
+# urxvt.font: -*-inconsolata-medium-*-normal-*-14-*-*-*-*-*-iso8859-*
 
 # And re-bind some keymappings (if you want, below are the defaults):
 # URxvt.keysym.C-minus:     resize-font:smaller
