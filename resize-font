@@ -161,7 +161,8 @@ sub update_font_size {
     $current = join('-', @font);
   }
   else {
-    $current =~ s/$regex/$1+$delta/ge;
+    my $newsize = $1+$delta if ($current =~ /$regex/);
+    $current =~ s/$regex/$newsize/ge if ($newsize > 0);
   }
   set_font($self, $font, $current);
 }
