@@ -157,7 +157,8 @@ sub update_font_size {
   elsif ($current =~ /^-/) {
     my @font = split(/-/, $current);
     # https://en.wikipedia.org/wiki/X_logical_font_description
-    $font[7] = $font[7]+$delta;
+    my $newsize = $font[7]+$delta;
+    $font[7] = $newsize if ($newsize > 0);
     $current = join('-', @font);
   }
   else {
