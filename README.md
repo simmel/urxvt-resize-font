@@ -7,7 +7,7 @@
 2. In your `~/.Xresources` file, add `resize-font` to the
    `urxvt.perl-ext-common` setting so URxvt loads the extension, e.g:
 
-    urxvt.perl-ext-common: default,tabbed,matcher,resize-font,-tabbed
+        urxvt.perl-ext-common: default,tabbed,matcher,resize-font,-tabbed
 
 
 ## Configuration
