@@ -14,27 +14,6 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# Usage:
-# Copy resize-font to where URxvt looks for Perl extensions, e.g:
-# $HOME/.urxvt/ext/ For exact path see urxvt(1) man-page on perl-lib.
-# Set your font in ~/.Xresources:
-# urxvt.font: xft:Inconsolata:pixelsize=12
-# to set it with pixels or
-# urxvt.font: xft:Inconsolata:size=12
-# to set it with points.
-# Fixed fonts are also supported:
-# urxvt.font: 7x14
-# XLFD/X logical font description too:
-# urxvt.font: -*-inconsolata-medium-*-normal-*-14-*-*-*-*-*-iso8859-*
-
-# And re-bind some keymappings (if you want, below are the defaults):
-# URxvt.keysym.C-minus:     resize-font:smaller
-# URxvt.keysym.C-plus:      resize-font:bigger
-# URxvt.keysym.C-equal:     resize-font:reset
-# URxvt.keysym.C-question:  resize-font:show
-#
-# You can also configure the number of steps to take when changing the size:
-# URxvt.resize-font.step: 2
 
 my @fonts = (
   {'name' => 'font',           'code' => 710},
