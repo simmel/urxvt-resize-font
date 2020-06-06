@@ -122,9 +122,21 @@ sub set_font {
   $self->cmd_parse(sprintf("\33]%d;%s\007", $font->{'code'}, $new));
 }
 
+sub round {
+  return sprintf("%.0f", @_);
+}
+
+sub atleast {
+  my ($min, $val) = @_;
+  if (0 < abs $val && abs $val < $min){
+     return $val / abs($val)
+  }
+  return $val;
+}
+
 sub update_font_size {
   my ($self, $font, $delta) = @_;
-  my $regex = qr"(?<=size=)(\d+)";
+  my $regex = qr"(?<=size=)(\d+(?:\.\d+)?)";
   my $current = get_font($self, $font->{'name'});
 
   my ($index) = grep { $fixed[$_] eq $current } 0..$#fixed;
@@ -138,8 +150,18 @@ sub update_font_size {
   elsif ($current =~ /^-/) {
     my @font = split(/-/, $current);
     # https://en.wikipedia.org/wiki/X_logical_font_description
-    my $newsize = $font[7]+$delta;
-    $font[7] = $newsize if ($newsize > 0);
+    #Pixel size
+    if ($font[7] gt 0) {
+      $delta = atleast(1, $delta);
+      my $newsize = round($font[7]+$delta);
+      $font[7] = $newsize if ($newsize > 0)
+    }
+    #Point size
+    elsif ($font[8] gt 0) {
+      $delta = atleast(1, $delta*10);
+      my $newsize = round($font[8]+$delta);
+      $font[8] = $newsize if ($newsize > 0)
+    }
     $current = join('-', @font);
   }
   else {

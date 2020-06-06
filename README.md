@@ -54,3 +54,5 @@ manual page.
 You can also configure the number of steps to take when changing the font size:
 
     URxvt.resize-font.step: 2
+
+And even fractions like 0.2 are supported.
